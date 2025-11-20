@@ -1,25 +1,44 @@
-import { useEffect, useState } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useState } from "react";
+
+import Navbar from "./components/Navbar";
+import CreateListing from "./components/CreateListing";
+
+import ListingsPage from "./pages/ListingsPage";
+import ListingDetailPage from "./pages/ListingDetailPage";
+import FrontPage from "./pages/FrontPage";
+import Login from "./components/Login";
 
 function App() {
-  const [backendMessage, setBackendMessage] = useState<string>("Loader...");
+  const [showCreateModal, setShowCreateModal] = useState(false);
 
-  useEffect(() => {
-    fetch("http://localhost:4000/api/health")
-      .then((res) => res.json())
-      .then((data) => {
-        setBackendMessage(`${data.status} - ${data.message}`);
-      })
-      .catch((err) => {
-        console.error(err);
-        setBackendMessage("Kunne ikke få svar fra backend");
-      });
-  }, []);
+  function openCreateModal() {
+    setShowCreateModal(true);
+  }
+
+  function closeCreateModal() {
+    setShowCreateModal(false);
+  }
 
   return (
-    <div style={{ padding: "2rem", fontFamily: "sans-serif" }}>
-      <h1>Parfume projekt</h1>
-      <p>Backend svar: {backendMessage}</p>
-    </div>
+    <BrowserRouter>
+
+      {/* Navbar skal kunne åbne modal */}
+      <Navbar openModal={openCreateModal} />
+
+      {/* Modal der viser create listing */}
+      <CreateListing
+        open={showCreateModal} 
+        onClose={closeCreateModal} 
+      />
+
+      <Routes>
+        <Route path="/" element={<FrontPage />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/listings" element={<ListingsPage />} />
+        <Route path="/listing/:id" element={<ListingDetailPage />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
